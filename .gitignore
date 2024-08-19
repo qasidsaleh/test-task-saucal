@@ -1,0 +1,16 @@
+.DS_Store
+logs/
+*.log
+app/sql/
+.DS_Store
+*.sql.gz
+.env
+.htaccess
+.rnd
+movefile.yml
+/vendor/
+/node_modules/
+wp-content/uploads/*
+wp-content/ewww/*
+/wp-content/cache/
+*node_modules

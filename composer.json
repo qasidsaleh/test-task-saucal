@@ -1,0 +1,13 @@
+{
+    "name": "glen/stategroup",
+    "description": "Composer file for State Group WP site.",
+    "require": {
+        "vlucas/phpdotenv": "^3.3"
+    },
+    "authors": [
+        {
+            "name": "glenhodges",
+            "email": "glen@rankhigher.ca"
+        }
+    ]
+}

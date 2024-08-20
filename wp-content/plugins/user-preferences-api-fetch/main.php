@@ -22,3 +22,16 @@ function upaf_activate_plugin() {
 function upaf_deactivate_plugin() {
     flush_rewrite_rules();
 }
+
+// Include the main plugin classes
+include_once plugin_dir_path(__FILE__) . 'includes/class-upaf.php';
+include_once plugin_dir_path(__FILE__) . 'includes/class-upaf-widget.php';
+
+// Initialize the plugin
+function upaf_initialize_plugin() {
+    $plugin = new UPAF_User_Preferences_API_Fetch();
+    add_action('widgets_init', function() {
+        register_widget('UPAF_Widget');
+    });
+}
+add_action('plugins_loaded', 'upaf_initialize_plugin');

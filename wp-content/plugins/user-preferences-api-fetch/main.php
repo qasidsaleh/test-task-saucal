@@ -35,3 +35,9 @@ function upaf_initialize_plugin() {
     });
 }
 add_action('plugins_loaded', 'upaf_initialize_plugin');
+
+// Enqueue styles
+function upaf_enqueue_styles() {
+    wp_enqueue_style('upaf-styles', plugin_dir_url(__FILE__) . 'assets/css/styles.css');
+}
+add_action('wp_enqueue_scripts', 'upaf_enqueue_styles');

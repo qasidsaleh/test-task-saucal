@@ -1,4 +1,9 @@
 <?php
+if (!defined('ABSPATH')) {
+    // Exit if accessed directly.
+    exit; 
+}
+// Include API Handler
 include_once plugin_dir_path(__FILE__) . 'class-upaf-api-handler.php';
 class UPAF_User_Preferences_API_Fetch {
     private $api_handler;

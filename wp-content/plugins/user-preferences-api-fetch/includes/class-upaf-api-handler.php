@@ -1,5 +1,8 @@
 <?php
-
+if (!defined('ABSPATH')) {
+    // Exit if accessed directly.
+    exit; 
+}
 class UPAF_API_Handler {
 
     private $api_url = 'https://httpbin.org/post';

@@ -7,6 +7,8 @@ class UPAF_User_Preferences_API_Fetch {
         add_action('init', array($this, 'add_rewrite_endpoint'));
         add_action('woocommerce_account_upaf_preferences_endpoint', array($this, 'upaf_preferences_page'));
         add_action('template_redirect', array($this, 'handle_form_submission'));
+        add_action('woocommerce_account_menu_items', array($this, 'add_my_account_link'), 40);
+        add_filter('woocommerce_get_endpoint_url', array($this, 'add_my_account_link'), 10, 2);
     }
     public function add_rewrite_endpoint() {
         add_rewrite_endpoint('upaf_preferences', EP_ROOT | EP_PAGES);
@@ -38,5 +40,12 @@ class UPAF_User_Preferences_API_Fetch {
         if (isset($_POST['upaf_save_preferences']) && is_user_logged_in()) {
             $this->save_preferences();
         }
-    }    
+    }
+    // Show user preferences in WooCommerce My Account
+    public function add_my_account_link($items) {
+        if (is_array($items)) {
+            $items['upaf_preferences'] = __('User Preferences', 'upaf');
+        }
+        return $items;
+    }
 }

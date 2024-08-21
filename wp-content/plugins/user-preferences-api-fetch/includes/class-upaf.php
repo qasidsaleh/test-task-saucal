@@ -1,8 +1,12 @@
 <?php
+include_once plugin_dir_path(__FILE__) . 'class-upaf-api-handler.php';
 class UPAF_User_Preferences_API_Fetch {
+    private $api_handler;
     public function __construct() {
+        $this->api_handler = new UPAF_API_Handler();
         add_action('init', array($this, 'add_rewrite_endpoint'));
         add_action('woocommerce_account_upaf_preferences_endpoint', array($this, 'upaf_preferences_page'));
+        add_action('template_redirect', array($this, 'handle_form_submission'));
     }
     public function add_rewrite_endpoint() {
         add_rewrite_endpoint('upaf_preferences', EP_ROOT | EP_PAGES);
@@ -29,4 +33,10 @@ class UPAF_User_Preferences_API_Fetch {
         </div>
         <?php
     }
+    // Handle form submission
+    public function handle_form_submission() {
+        if (isset($_POST['upaf_save_preferences']) && is_user_logged_in()) {
+            $this->save_preferences();
+        }
+    }    
 }

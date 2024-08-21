@@ -60,13 +60,12 @@ class UPAF_User_Preferences_API_Fetch {
         // Save preferences to user meta
         update_user_meta(get_current_user_id(), '_upaf_preferences', $preferences_array);
 
-        $api_data = $this->api_handler->fetch_data($preferences_array);
+        // Push data to API and fetch response
+        $api_data = $this->api_handler->push_data($preferences_array);
 
-        // Handle API response
-        if (is_wp_error($api_data)) {
-            echo '<p>' . __('Failed to fetch data from API: ', 'upaf') . esc_html($api_data->get_error_message()) . '</p>';
-        } else {
-            echo '<pre>' . print_r($api_data, true) . '</pre>';
+         // Handle API response
+         if (is_wp_error($api_data)) {
+            echo '<p>' . __('Failed to push data to API: ', 'upaf') . esc_html($api_data->get_error_message()) . '</p>';
         }
     
         // Redirect to avoid form resubmission

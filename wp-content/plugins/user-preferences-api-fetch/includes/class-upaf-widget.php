@@ -1,4 +1,10 @@
 <?php
+
+if (!defined('ABSPATH')) {
+    // Exit if accessed directly.
+    exit; 
+}
+
 class UPAF_Widget extends WP_Widget {
     public function __construct() {
         parent::__construct(
@@ -7,52 +13,54 @@ class UPAF_Widget extends WP_Widget {
             array('description' => __('Displays data based on user preferences.', 'upaf'))
         );
     }
-    // Placeholder for actual widget content
+
     public function widget($args, $instance) {
         if (!is_user_logged_in()) {
             echo '<p>' . __('Please log in to view this widget.', 'upaf') . '</p>';
             return;
         }
 
-        $user = wp_get_current_user();
         $user_id = get_current_user_id();
         $preferences = get_user_meta($user_id, '_upaf_preferences', true);
 
-        if (!$preferences) {
-            echo $args['before_widget'] . $args['before_title'] . __('No preferences set', 'upaf') . $args['after_title'] . $args['after_widget'];
+        if (!is_array($preferences) || empty($preferences)) {
+            echo '<p>' . __('No preferences set.', 'upaf') . '</p>';
             return;
         }
 
-        $output = '';
+        $api_handler = new UPAF_API_Handler();
+        $api_data = $api_handler->fetch_data($preferences);
 
-        foreach ($preferences as $preference) {
-            $output .= $this->fetch_data_from_api($preference);
+        if (is_wp_error($api_data)) {
+            echo '<p>' . __('Failed to fetch data from API: ', 'upaf') . esc_html($api_data->get_error_message()) . '</p>';
+        } else {
+            echo $args['before_widget'];
+            echo $args['before_title'] . __('User Preferences', 'upaf') . $args['after_title'];
+            
+            foreach ($api_data['json']['preferences'] as $data_item) {
+                // Normalize input to lower case
+                $data_item = strtolower($data_item);
+                if ($data_item === 'username') {
+                    $display_data = __('Username: ', 'upaf') . esc_html(get_userdata($user_id)->user_login);
+                } elseif ($data_item === 'email') {
+                    $display_data = __('Email: ', 'upaf') . esc_html(get_userdata($user_id)->user_email);
+                } elseif ($data_item === 'nickname') {
+                    $display_data = __('Nickname: ', 'upaf') . esc_html(get_userdata($user_id)->nickname);
+                } else {
+                    $display_data = __('Preference not recognized: ', 'upaf') . esc_html($data_item);
+                }
+                // Display the processed data
+                echo '<p>' . $display_data . '</p>';
+            }
+            echo $args['after_widget'];
         }
-
-        // Placeholder for actual widget content
-        echo $args['before_widget'];
-        echo $args['before_title'] . __('User Preferences', 'upaf') . $args['after_title'];
-        echo $output;
-        echo $args['after_widget'];
     }
 
-    private function fetch_data_from_api($preference) {
-        // If preference is 'username', 'email', or 'nickname', fetch from user data
-        $user_id = get_current_user_id();
-        $user_info = get_userdata($user_id);
+    public function form($instance) {
+        echo '<p>' . __('This widget does not have any options.', 'upaf') . '</p>';
+    }
 
-        switch ($preference) {
-            case 'username':
-                return '<p>' . __('Username: ', 'upaf') . esc_html($user_info->user_login) . '</p>';
-
-            case 'email':
-                return '<p>' . __('Email: ', 'upaf') . esc_html($user_info->user_email) . '</p>';
-
-            case 'nickname':
-                return '<p>' . __('Nickname: ', 'upaf') . esc_html($user_info->nickname) . '</p>';
-
-            default:
-                return '<p>' . esc_html($preference) . ': ' . __('Preference not recognized', 'upaf') . '</p>';
-        }
+    public function update($new_instance, $old_instance) {
+        return $old_instance;
     }
 }
